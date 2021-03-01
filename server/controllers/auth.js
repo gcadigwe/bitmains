@@ -1,5 +1,7 @@
 const User = require("../models/User");
 const validator = require("validator");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 exports.RegisterController = async (req, res) => {
   if (!validator.isEmail(req.body.email))
@@ -64,6 +66,10 @@ exports.LoginController = async (req, res) => {
 
   if (!validpass)
     return res.status(400).json({ error: { message: "password is wrong" } });
+
+  //create and assign token
+  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
+  res.header("auth-token", token).send(token);
 
   res.send("logged in");
 };
